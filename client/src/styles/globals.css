@@ -1,0 +1,266 @@
+/* ============================================
+   ÀṢÀ — Global Design System
+   Pinterest-inspired creative palette
+   ============================================ */
+
+   /* ============================================
+   Responsive utilities for dashboard tabs
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .captions-grid { grid-template-columns: repeat(2, 1fr); }
+  .platform-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .two-col-section { grid-template-columns: 1fr; }
+  .hero-image, .hero-placeholder { height: 240px; }
+}
+
+@media (max-width: 768px) {
+  .shot-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .captions-grid { grid-template-columns: 1fr; }
+  .platform-grid { grid-template-columns: 1fr; }
+  .hook-card { flex-direction: column; align-items: stretch; }
+  .arc-step { flex-direction: column; align-items: stretch; }
+}
+
+:root {
+  /* Brand colors */
+  --asa-bg: #f6f2ed;
+  --asa-bg-elevated: #ffffff;
+  --asa-bg-card: #ffffff;
+  --asa-border: rgba(0, 0, 0, 0.08);
+  --asa-border-strong: rgba(0, 0, 0, 0.14);
+
+  --asa-orange: #e8622a;
+  --asa-orange-light: #f4a634;
+  --asa-orange-dim: rgba(232, 98, 42, 0.12);
+  --asa-orange-border: rgba(232, 98, 42, 0.25);
+
+  --asa-text-primary: #1f1f1f;
+  --asa-text-secondary: rgba(31, 31, 31, 0.72);
+  --asa-text-muted: rgba(31, 31, 31, 0.55);
+  --asa-text-faint: rgba(31, 31, 31, 0.28);
+
+  --asa-radius-sm: 8px;
+  --asa-radius-md: 16px;
+  --asa-radius-lg: 24px;
+
+  --asa-font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  width: 100%;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: radial-gradient(circle at top left, #fff6ee 0%, #f6f2ed 35%, #fdf9f6 100%);
+  color: var(--asa-text-primary);
+  font-family: var(--asa-font-sans);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+}
+
+input,
+textarea,
+select {
+  font-family: inherit;
+}
+
+/* Shared button styles used across components */
+.btn-primary {
+  background: var(--asa-orange);
+  color: #fff;
+  padding: 0.75rem 1.75rem;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--asa-text-secondary);
+  border: 0.5px solid var(--asa-border-strong);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--asa-radius-sm);
+  font-size: 14px;
+  transition: background 0.2s, color 0.2s;
+}
+
+.btn-secondary:hover {
+  background: var(--asa-bg-elevated);
+  color: var(--asa-text-primary);
+}
+
+.btn-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Scrollbar (webkit) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.18);
+}
+
+/* Animations shared across components */
+@keyframes asa-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);
+  }
+}
+
+@keyframes asa-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes asa-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.asa-fade-in {
+  animation: asa-fade-in 0.4s ease forwards;
+}
+
+.asa-card {
+  background: var(--asa-bg-card);
+  border: 0.5px solid var(--asa-border);
+  border-radius: var(--asa-radius-lg);
+  box-shadow: 0 24px 60px rgba(31, 31, 31, 0.06);
+}
+
+.asa-hover-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 30px 80px rgba(31, 31, 31, 0.1);
+}
+
+.asa-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem;
+}
+
+/* ============================================
+   Dashboard tab grid utilities & responsive
+   ============================================ */
+
+/* ── Caption grid ── */
+.captions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Platform grid ── */
+.platform-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+}
+
+/* ── Two-column section (mood + palette, times + audience) ── */
+.two-col-section {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ── Shot list grid ── */
+.shot-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+/* ── Responsive breakpoints ── */
+
+@media (max-width: 1024px) {
+  .captions-grid,
+  .platform-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 900px) {
+  .two-col-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .shot-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .captions-grid,
+  .platform-grid {
+    grid-template-columns: 1fr;
+  }
+}
