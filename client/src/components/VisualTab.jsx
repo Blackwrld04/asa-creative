@@ -35,7 +35,6 @@ export default function VisualTab({ data }) {
 
   return (
     <div style={styles.wrap} className="asa-fade-in">
-      {/* Mood description */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Visual mood</h2>
         <div style={styles.moodCard} className="asa-hover-card">
@@ -43,8 +42,7 @@ export default function VisualTab({ data }) {
         </div>
       </section>
 
-      {/* Hero image + palette side by side */}
-      <section style={styles.twoColSection}>
+      <section style={styles.twoColSection} className="two-col-section">
         <div style={styles.heroImageWrap}>
           <h2 style={styles.sectionTitle}>Hero concept</h2>
           <div style={styles.heroImageBox}>
@@ -87,7 +85,6 @@ export default function VisualTab({ data }) {
         </div>
       </section>
 
-      {/* Shot list */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Shot list</h2>
         <div style={styles.shotGrid}>
@@ -246,14 +243,3 @@ const styles = {
     lineHeight: 1.55,
   },
 };
-
-// Responsive
-/*
-@media (max-width: 900px) {
-  .two-col-section { grid-template-columns: 1fr; }
-  .hero-image, .hero-placeholder { height: 240px; }
-}
-@media (max-width: 600px) {
-  .shot-grid { grid-template-columns: 1fr; }
-}
-*/

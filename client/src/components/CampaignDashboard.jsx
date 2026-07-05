@@ -2,27 +2,26 @@ import { useState } from "react";
 import WrittenTab from "./WrittenTab";
 import VisualTab from "./VisualTab";
 import StrategyTab from "./StrategyTab";
+import CampaignHistory from "./CampaignHistory";
+import CreatorProfile from "./CreatorProfile";
 import "../styles/globals.css";
 
-/**
- * CampaignDashboard
- * The main results shell shown after the onboarding form is submitted.
- * Holds the three output tabs and the campaign summary header.
- *
- * Props:
- *  - campaignData: the generated campaign object from the backend
- *      { projectName, creatorType, culturalContext, tone, written, visual, strategy }
- *  - onNewCampaign: callback to reset and start over
- */
-
 const TABS = [
-  { id: "written", label: "Written content", icon: "✍️" },
-  { id: "visual", label: "Visual concepts", icon: "🎨" },
-  { id: "strategy", label: "Strategy", icon: "📊" },
+  { id: "written", label: "Written content" },
+  { id: "visual", label: "Visual concepts" },
+  { id: "strategy", label: "Strategy" },
 ];
 
-export default function CampaignDashboard({ campaignData, onNewCampaign, onRegenerate }) {
+export default function CampaignDashboard({
+  campaignData,
+  onNewCampaign,
+  onRegenerate,
+  onRestoreFromHistory,
+}) {
   const [activeTab, setActiveTab] = useState("written");
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
 
   if (!campaignData) {
     return (
@@ -34,38 +33,97 @@ export default function CampaignDashboard({ campaignData, onNewCampaign, onRegen
 
   const { projectName, creatorType, culturalContext, tone } = campaignData;
 
+  const handleShare = () => {
+    try {
+      const payload = {
+        projectName: campaignData.projectName,
+        creatorType: campaignData.creatorType,
+        culturalContext: campaignData.culturalContext,
+        tone: campaignData.tone,
+        written: campaignData.written,
+        visual: campaignData.visual,
+        strategy: campaignData.strategy,
+      };
+      const encoded = btoa(encodeURIComponent(JSON.stringify(payload)));
+      const shareUrl = `${window.location.origin}${window.location.pathname}?campaign=${encoded}`;
+      navigator.clipboard?.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 2500);
+    } catch (err) {
+      console.error("Share failed:", err);
+    }
+  };
+
   return (
-    <div style={styles.page}>
+    <div style={styles.page} className="dashboard-page">
+      <CampaignHistory
+        isOpen={historyOpen}
+        onClose={() => setHistoryOpen(false)}
+        onRestore={(entry) => {
+          onRestoreFromHistory(entry);
+          setHistoryOpen(false);
+        }}
+      />
+
+      <CreatorProfile
+        isOpen={profileOpen}
+        onClose={() => setProfileOpen(false)}
+        onApply={() => setProfileOpen(false)}
+      />
+
       <div style={styles.container}>
-        {/* Top bar */}
-        <div style={styles.topBar}>
+        <div style={styles.topBar} className="dashboard-top-bar">
           <div style={styles.logo}>
             <div style={styles.logoMark}>Àṣà</div>
             <span style={styles.logoText}>
               àṣà<span style={{ color: "var(--asa-orange)" }}>.</span>ai
             </span>
           </div>
-          <button onClick={onNewCampaign} style={styles.newBtn}>
-            + New campaign
-          </button>
+
+          <div style={styles.topBarActions}>
+            <button onClick={() => setHistoryOpen(true)} style={styles.iconBtn}>
+              History
+            </button>
+            <button onClick={() => setProfileOpen(true)} style={styles.iconBtn}>
+              Profile
+            </button>
+            <button
+              onClick={handleShare}
+              style={{
+                ...styles.iconBtn,
+                ...(shareCopied ? styles.iconBtnSuccess : {}),
+              }}
+            >
+              {shareCopied ? "✓ Link copied!" : "Share"}
+            </button>
+            <button onClick={onNewCampaign} style={styles.newBtn} className="dashboard-new-btn">
+              + New campaign
+            </button>
+          </div>
         </div>
 
-        {/* Campaign summary header */}
-        <div style={styles.summaryCard} className="asa-card">
+        {shareCopied && (
+          <div style={styles.shareBanner} className="asa-fade-in">
+            Share link copied to clipboard — paste it anywhere to share this campaign
+          </div>
+        )}
+
+        <div style={styles.summaryCard} className="asa-card dashboard-summary-card">
           <div>
             <p style={styles.summaryEyebrow}>Your campaign</p>
-            <h1 style={styles.summaryTitle}>{projectName || "Untitled project"}</h1>
+            <h1 style={styles.summaryTitle} className="dashboard-summary-title">{projectName || "Untitled project"}</h1>
             <div style={styles.metaRow}>
               <span style={styles.metaPill}>{creatorType}</span>
               <span style={styles.metaPill}>{culturalContext}</span>
               <span style={styles.metaPill}>{tone}</span>
             </div>
           </div>
-          <button style={styles.regenBtn} onClick={onRegenerate || onNewCampaign}>↻ Regenerate</button>
+          <button style={styles.regenBtn} onClick={onRegenerate || onNewCampaign}>
+            ↻ Regenerate
+          </button>
         </div>
 
-        {/* Tab navigation */}
-        <div style={styles.tabBar}>
+        <div style={styles.tabBar} className="dashboard-tab-bar">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -75,20 +133,23 @@ export default function CampaignDashboard({ campaignData, onNewCampaign, onRegen
                 ...(activeTab === tab.id ? styles.tabButtonActive : {}),
               }}
             >
-              <span style={styles.tabIcon}>{tab.icon}</span>
               {tab.label}
             </button>
           ))}
         </div>
 
-        {/* Tab content */}
         <div style={styles.tabContent} className="asa-fade-in" key={activeTab}>
           {activeTab === "written" && (
-            <WrittenTab data={campaignData.written} />
+            <WrittenTab data={campaignData.written} projectName={projectName} />
           )}
-          {activeTab === "visual" && <VisualTab data={campaignData.visual} />}
+          {activeTab === "visual" && (
+            <VisualTab data={campaignData.visual} />
+          )}
           {activeTab === "strategy" && (
-            <StrategyTab data={campaignData.strategy} />
+            <StrategyTab
+              data={campaignData.strategy}
+              culturalContext={culturalContext}
+            />
           )}
         </div>
       </div>
@@ -97,51 +158,57 @@ export default function CampaignDashboard({ campaignData, onNewCampaign, onRegen
 }
 
 const styles = {
-  page: {
-    minHeight: "100vh",
-    background: "var(--asa-bg)",
-    padding: "2rem 3rem 4rem",
-  },
-  container: {
-    width: "100%",
-    margin: "0 auto",
-  },
-  topBar: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: "1.75rem",
-  },
-  logo: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
+  page: { minHeight: "100vh", background: "var(--asa-bg)", padding: "2rem 3rem 4rem" },
+  container: { width: "100%", margin: "0 auto" },
+  topBar: { display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1.75rem", flexWrap: "wrap", gap: "0.75rem" },
+  logo: { display: "flex", alignItems: "center", gap: "12px" },
   logoMark: {
-    width: "36px",
-    height: "36px",
+    width: "36px", height: "36px",
     background: "linear-gradient(135deg, #e8622a 0%, #f4a634 100%)",
-    borderRadius: "14px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontWeight: 700,
-    fontSize: "13px",
-    color: "#fff",
+    borderRadius: "14px", display: "flex", alignItems: "center",
+    justifyContent: "center", fontWeight: 700, fontSize: "13px", color: "#fff",
   },
-  logoText: {
-    fontSize: "16px",
-    fontWeight: 700,
-    color: "var(--asa-text-primary)",
-  },
-  newBtn: {
+  logoText: { fontSize: "16px", fontWeight: 700, color: "var(--asa-text-primary)" },
+  topBarActions: { display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" },
+  iconBtn: {
     background: "#fff",
     border: "0.5px solid var(--asa-border-strong)",
     color: "var(--asa-text-primary)",
-    padding: "0.75rem 1.15rem",
+    padding: "0.65rem 1rem",
     borderRadius: "999px",
     fontSize: "13px",
-    boxShadow: "0 14px 34px rgba(31, 31, 31, 0.08)",
+    fontWeight: 600,
+    boxShadow: "0 8px 24px rgba(31,31,31,0.06)",
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    whiteSpace: "nowrap",
+  },
+  iconBtnSuccess: {
+    background: "#f0faf5",
+    borderColor: "rgba(34,160,107,0.3)",
+    color: "#22a06b",
+  },
+  newBtn: {
+    background: "var(--asa-orange)",
+    border: "none",
+    color: "#fff",
+    padding: "0.75rem 1.25rem",
+    borderRadius: "999px",
+    fontSize: "13px",
+    fontWeight: 700,
+    boxShadow: "0 8px 24px rgba(232,98,42,0.25)",
+    whiteSpace: "nowrap",
+  },
+  shareBanner: {
+    background: "#f0faf5",
+    border: "0.5px solid rgba(34,160,107,0.3)",
+    color: "#22a06b",
+    borderRadius: "10px",
+    padding: "0.75rem 1.25rem",
+    fontSize: "13px",
+    fontWeight: 500,
+    marginBottom: "1.25rem",
   },
   summaryCard: {
     background: "var(--asa-bg-elevated)",
@@ -151,93 +218,24 @@ const styles = {
     display: "flex",
     alignItems: "flex-start",
     justifyContent: "space-between",
+    gap: "1rem",
     marginBottom: "1.75rem",
-    boxShadow: "0 24px 60px rgba(31, 31, 31, 0.06)",
+    boxShadow: "0 24px 60px rgba(31,31,31,0.06)",
   },
-  summaryEyebrow: {
-    fontSize: "11px",
-    textTransform: "uppercase",
-    letterSpacing: "0.12em",
-    color: "var(--asa-orange)",
-    marginBottom: "0.45rem",
-    fontWeight: 700,
-  },
-  summaryTitle: {
-    fontSize: "26px",
-    fontWeight: 700,
-    letterSpacing: "-0.4px",
-    marginBottom: "0.85rem",
-    color: "var(--asa-text-primary)",
-  },
-  metaRow: {
-    display: "flex",
-    gap: "10px",
-    flexWrap: "wrap",
-  },
-  metaPill: {
-    background: "#fef5f0",
-    border: "0.5px solid var(--asa-orange-border)",
-    borderRadius: "999px",
-    padding: "0.45rem 0.95rem",
-    fontSize: "12px",
-    color: "var(--asa-text-primary)",
-    textTransform: "capitalize",
-  },
-  regenBtn: {
-    background: "#fff",
-    border: "0.5px solid var(--asa-border-strong)",
-    color: "var(--asa-text-primary)",
-    padding: "0.65rem 1.15rem",
-    borderRadius: "999px",
-    fontSize: "13px",
-    whiteSpace: "nowrap",
-    boxShadow: "0 14px 34px rgba(31, 31, 31, 0.08)",
-  },
-  tabBar: {
-    display: "flex",
-    gap: "8px",
-    marginBottom: "1.75rem",
-    background: "transparent",
-    padding: "4px",
-  },
+  summaryEyebrow: { fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.12em", color: "var(--asa-orange)", marginBottom: "0.45rem", fontWeight: 700 },
+  summaryTitle: { fontSize: "26px", fontWeight: 700, letterSpacing: "-0.4px", marginBottom: "0.85rem", color: "var(--asa-text-primary)" },
+  metaRow: { display: "flex", gap: "10px", flexWrap: "wrap" },
+  metaPill: { background: "#fef5f0", border: "0.5px solid var(--asa-orange-border)", borderRadius: "999px", padding: "0.45rem 0.95rem", fontSize: "12px", color: "var(--asa-text-primary)", textTransform: "capitalize" },
+  regenBtn: { background: "#fff", border: "0.5px solid var(--asa-border-strong)", color: "var(--asa-text-primary)", padding: "0.65rem 1.15rem", borderRadius: "999px", fontSize: "13px", whiteSpace: "nowrap", boxShadow: "0 14px 34px rgba(31,31,31,0.08)" },
+  tabBar: { display: "flex", gap: "8px", marginBottom: "1.75rem", padding: "4px" },
   tabButton: {
-    flex: 1,
-    background: "#fff",
-    border: "0.5px solid var(--asa-border)",
-    color: "var(--asa-text-muted)",
-    padding: "0.85rem 1rem",
-    borderRadius: "999px",
-    fontSize: "13px",
-    fontWeight: 600,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "6px",
-    transition: "all 0.22s ease",
-    boxShadow: "0 18px 48px rgba(31, 31, 31, 0.05)",
+    flex: 1, background: "#fff", border: "0.5px solid var(--asa-border)",
+    color: "var(--asa-text-muted)", padding: "0.85rem 1rem", borderRadius: "999px",
+    fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center",
+    justifyContent: "center", gap: "6px", transition: "all 0.22s ease",
+    boxShadow: "0 18px 48px rgba(31,31,31,0.05)",
   },
-  tabButtonActive: {
-    background: "#ffe7dc",
-    color: "var(--asa-orange)",
-    borderColor: "rgba(232, 98, 42, 0.2)",
-  },
-  tabButtonHover: {
-    transform: "translateY(-1px)",
-    boxShadow: "0 22px 56px rgba(31, 31, 31, 0.08)",
-  },
-  tabIcon: {
-    fontSize: "14px",
-  },
-  tabContent: {
-    minHeight: "300px",
-    background: "transparent",
-  },
-  emptyState: {
-    minHeight: "100vh",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "var(--asa-text-muted)",
-    background: "var(--asa-bg)",
-  },
+  tabButtonActive: { background: "#ffe7dc", color: "var(--asa-orange)", borderColor: "rgba(232,98,42,0.2)" },
+  tabContent: { minHeight: "300px", background: "transparent" },
+  emptyState: { minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--asa-text-muted)", background: "var(--asa-bg)" },
 };

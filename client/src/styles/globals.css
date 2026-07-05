@@ -1,35 +1,4 @@
-/* ============================================
-   ÀṢÀ — Global Design System
-   Pinterest-inspired creative palette
-   ============================================ */
-
-   /* ============================================
-   Responsive utilities for dashboard tabs
-   ============================================ */
-
-@media (max-width: 1024px) {
-  .captions-grid { grid-template-columns: repeat(2, 1fr); }
-  .platform-grid { grid-template-columns: repeat(2, 1fr); }
-}
-
-@media (max-width: 900px) {
-  .two-col-section { grid-template-columns: 1fr; }
-  .hero-image, .hero-placeholder { height: 240px; }
-}
-
-@media (max-width: 768px) {
-  .shot-grid { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 640px) {
-  .captions-grid { grid-template-columns: 1fr; }
-  .platform-grid { grid-template-columns: 1fr; }
-  .hook-card { flex-direction: column; align-items: stretch; }
-  .arc-step { flex-direction: column; align-items: stretch; }
-}
-
 :root {
-  /* Brand colors */
   --asa-bg: #f6f2ed;
   --asa-bg-elevated: #ffffff;
   --asa-bg-card: #ffffff;
@@ -91,7 +60,6 @@ select {
   font-family: inherit;
 }
 
-/* Shared button styles used across components */
 .btn-primary {
   background: var(--asa-orange);
   color: #fff;
@@ -134,7 +102,6 @@ select {
   pointer-events: none;
 }
 
-/* Scrollbar (webkit) */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -153,7 +120,6 @@ select {
   background: rgba(0, 0, 0, 0.18);
 }
 
-/* Animations shared across components */
 @keyframes asa-pulse {
   0%,
   100% {
@@ -205,39 +171,96 @@ select {
   gap: 1.5rem;
 }
 
-/* ============================================
-   Dashboard tab grid utilities & responsive
-   ============================================ */
-
-/* ── Caption grid ── */
 .captions-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
-/* ── Platform grid ── */
 .platform-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 1.25rem;
 }
 
-/* ── Two-column section (mood + palette, times + audience) ── */
 .two-col-section {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
   gap: 1.5rem;
 }
 
-/* ── Shot list grid ── */
 .shot-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1rem;
 }
 
-/* ── Responsive breakpoints ── */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.onboarding-footer-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.dashboard-summary-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.written-controls-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.written-right-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.slide-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 420px;
+  background: #fff;
+  z-index: 101;
+  padding: 2rem;
+  overflow-y: auto;
+  box-shadow: -24px 0 80px rgba(31, 31, 31, 0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
 @media (max-width: 1024px) {
   .captions-grid,
@@ -256,11 +279,110 @@ select {
   .shot-grid {
     grid-template-columns: 1fr;
   }
+
+  .dashboard-page {
+    padding: 1.25rem 1rem 3rem !important;
+  }
+
+  .dashboard-top-bar {
+    gap: 0.5rem;
+  }
+
+  .dashboard-summary-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dashboard-summary-title {
+    font-size: 20px !important;
+  }
+
+  .dashboard-tab-bar {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 2px;
+  }
+  .dashboard-tab-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-row {
+    grid-template-columns: 1fr;
+  }
+  .comparison-row .vs-div {
+    display: none;
+  }
+
+  .slide-panel {
+    width: 100% !important;
+    padding: 1.5rem 1.25rem;
+  }
+
+  .onboarding-content {
+    padding: 1.25rem 1rem 1.5rem !important;
+  }
+
+  .onboarding-nav-links {
+    display: none !important;
+  }
+
+  .onboarding-heading {
+    font-size: clamp(44px, 11vw, 110px) !important;
+    letter-spacing: -0.5px !important;
+  }
+
+  .onboarding-info-title {
+    font-size: clamp(28px, 8vw, 52px) !important;
+  }
+
+  .onboarding-middle {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 1rem !important;
+  }
+  .onboarding-side-copy {
+    text-align: left !important;
+    max-width: 100% !important;
+  }
+
+  .onboarding-footer-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .written-controls-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .written-right-controls {
+    justify-content: flex-end;
+  }
 }
 
 @media (max-width: 640px) {
   .captions-grid,
   .platform-grid {
     grid-template-columns: 1fr;
+  }
+
+  .onboarding-heading {
+    font-size: clamp(32px, 9vw, 60px) !important;
+  }
+
+  .onboarding-info-title {
+    font-size: clamp(24px, 7vw, 40px) !important;
+  }
+
+  .onboarding-footer-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .dashboard-new-btn {
+    padding: 0.65rem 0.85rem !important;
+    font-size: 12px !important;
   }
 }

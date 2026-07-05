@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import OnboardingForm from "./components/OnboardingForm";
 import CampaignDashboard from "./components/CampaignDashboard";
+import { saveToHistory } from "./components/CampaignHistory";
+import { loadProfile } from "./components/CreatorProfile";
 import "./styles/globals.css";
 
 const DEFAULT_FORM_DATA = {
@@ -12,60 +14,91 @@ const DEFAULT_FORM_DATA = {
 };
 
 export default function App() {
-  const [view, setView] = useState("onboarding"); // 'onboarding' | 'loading' | 'dashboard'
+  const [view, setView] = useState("onboarding");
   const [campaignData, setCampaignData] = useState(null);
   const [error, setError] = useState(null);
-  const [formMemory, setFormMemory] = useState({
-    step: 1,
-    formData: DEFAULT_FORM_DATA,
-  });
+  const [lastFormData, setLastFormData] = useState(null);
 
-  const handleFormStateChange = ({ step, formData }) => {
-    setFormMemory({ step, formData });
-  };
+  const savedProfile = loadProfile();
+  const initialFormData = savedProfile
+    ? {
+        ...DEFAULT_FORM_DATA,
+        creatorType: savedProfile.creatorType || "",
+        culturalContext: savedProfile.culturalContext || "",
+        tone: savedProfile.tone || "",
+      }
+    : DEFAULT_FORM_DATA;
 
-  const handleOnboardingComplete = async (formData) => {
+  useEffect(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const encoded = params.get("campaign");
+      if (encoded) {
+        const decoded = JSON.parse(decodeURIComponent(atob(encoded)));
+        if (decoded && decoded.written && decoded.visual && decoded.strategy) {
+          setCampaignData(decoded);
+          setView("dashboard");
+          window.history.replaceState({}, "", window.location.pathname);
+        }
+      }
+    } catch (err) {
+      console.warn("Could not decode shared campaign URL:", err);
+    }
+  }, []);
+
+  const generateCampaign = async (formData) => {
     setView("loading");
     setError(null);
+    setLastFormData(formData);
 
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/campaign`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      }
-    );
-
-    if (!response.ok) throw new Error(`Server error: ${response.status}`);
-
-    const result = await response.json();
-
-    setCampaignData({
-      projectName: formData.projectName,
-      creatorType: formData.creatorType,
-      culturalContext: formData.culturalContext,
-      tone: formData.tone,
-      written: result.written,
-      visual: result.visual,
-      strategy: result.strategy,
-    });
-
-    setView("dashboard");
-  } catch (err) {
-      console.error("Campaign generation failed:", err);
-      setError(
-        "Something went wrong generating your campaign. Please try again."
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL || "http://localhost:4000"}/api/campaign`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        }
       );
+
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
+
+      const result = await response.json();
+
+      const campaign = {
+        projectName: formData.projectName,
+        creatorType: formData.creatorType,
+        culturalContext: formData.culturalContext,
+        tone: formData.tone,
+        written: result.written,
+        visual: result.visual,
+        strategy: result.strategy,
+      };
+
+      saveToHistory(campaign);
+      setCampaignData(campaign);
+      setView("dashboard");
+    } catch (err) {
+      console.error("Campaign generation failed:", err);
+      setError("Something went wrong generating your campaign. Please try again.");
       setView("onboarding");
     }
   };
 
+  const handleOnboardingComplete = (formData) => generateCampaign(formData);
+
+  const handleRegenerate = () => {
+    if (lastFormData) generateCampaign(lastFormData);
+  };
+
   const handleNewCampaign = () => {
     setCampaignData(null);
-    setFormMemory({ step: 1, formData: DEFAULT_FORM_DATA });
     setView("onboarding");
+  };
+
+  const handleRestoreFromHistory = (entry) => {
+    setCampaignData(entry);
+    setView("dashboard");
   };
 
   if (view === "loading") {
@@ -85,6 +118,8 @@ export default function App() {
       <CampaignDashboard
         campaignData={campaignData}
         onNewCampaign={handleNewCampaign}
+        onRegenerate={handleRegenerate}
+        onRestoreFromHistory={handleRestoreFromHistory}
       />
     );
   }
@@ -92,15 +127,11 @@ export default function App() {
   return (
     <>
       {error && (
-        <div style={loadingStyles.errorBanner}>
-          {error}
-        </div>
+        <div style={loadingStyles.errorBanner}>{error}</div>
       )}
       <OnboardingForm
         onComplete={handleOnboardingComplete}
-        initialStep={formMemory.step}
-        initialFormData={formMemory.formData}
-        onFormStateChange={handleFormStateChange}
+        initialFormData={initialFormData}
       />
     </>
   );

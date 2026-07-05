@@ -1,11 +1,3 @@
-/**
- * culturalContext.js
- *
- * This is the heart of àṣà. Before any text is generated, this service
- * builds a rich, culturally-specific context block that gets injected
- * into every LLM prompt — so output isn't generic AI content, it's
- * rooted in the creator's actual cultural language and references.
- */
 
 const CULTURAL_PROFILES = {
   "nigeria-yoruba": {

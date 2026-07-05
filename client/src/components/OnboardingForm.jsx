@@ -9,10 +9,10 @@ const CREATOR_TYPES = [
 ];
 
 const CULTURAL_CONTEXTS = [
-  { id: "nigeria-yoruba", label: "Nigeria >> Yoruba" },
-  { id: "nigeria-igbo", label: "Nigeria >> Igbo" },
-  { id: "nigeria-hausa", label: "Nigeria >> Hausa" },
-  { id: "nigeria-pidgin", label: "Nigeria >> Pidgin (general)" },
+  { id: "nigeria-yoruba", label: "Nigeria → Yoruba" },
+  { id: "nigeria-igbo", label: "Nigeria → Igbo" },
+  { id: "nigeria-hausa", label: "Nigeria → Hausa" },
+  { id: "nigeria-pidgin", label: "Nigeria → Pidgin (general)" },
   { id: "ghana", label: "Ghana" },
   { id: "kenya", label: "Kenya" },
   { id: "south-africa", label: "South Africa" },
@@ -51,8 +51,7 @@ const STEP_CONTENT = {
   },
 };
 
-// ── LOCAL IMAGE MAP ────────────────────────────────────────────────────────
-// 🔴 CHANGE THESE PATHS TO MATCH YOUR ACTUAL IMAGE FILENAMES
+
 const LOCAL_IMAGES = {
   1: "/image/form-bg-1.jpg",
   2: "/image/form-bg-2.jpg",
@@ -132,24 +131,20 @@ export default function OnboardingForm({
       subtitle: "Four steps to a culturally‑aware campaign",
       sections: [
         {
-          icon: "🎨",
           title: "1. Tell us your craft",
           desc: "Choose what you create – music, film, brand, or content. This sets the creative direction.",
         },
         {
-          icon: "📝",
           title: "2. Describe your project",
           desc: "Give àṣà the brief – the more detail, the sharper the output.",
         },
         {
-          icon: "🌍",
           title: "3. Set your cultural voice",
           desc: "Select your cultural context and tone. àṣà uses this to make every word and visual resonate.",
         },
         {
-          icon: "🚀",
           title: "4. Launch your campaign",
-          desc: "Get a full creative package: strategy, copy, visuals, and more – all tailored to you.",
+          desc: "Get a full creative package: strategy, copy, visuals, and more, all tailored to you.",
         },
       ],
     },
@@ -235,7 +230,7 @@ export default function OnboardingForm({
     return (
       <div style={styles.infoContainer} className="asa-fade-in" key={pageKey}>
         <div style={styles.infoHeader}>
-          <h1 style={styles.infoTitle}>{page.title}</h1>
+          <h1 style={styles.infoTitle} className="onboarding-info-title">{page.title}</h1>
           <p style={styles.infoSubtitle}>{page.subtitle}</p>
         </div>
 
@@ -243,7 +238,6 @@ export default function OnboardingForm({
           <div style={styles.howGrid}>
             {page.sections.map((s, i) => (
               <div key={i} style={styles.howCard}>
-                <div style={styles.howIcon}>{s.icon}</div>
                 <h3 style={styles.howCardTitle}>{s.title}</h3>
                 <p style={styles.howCardDesc}>{s.desc}</p>
               </div>
@@ -301,14 +295,13 @@ export default function OnboardingForm({
       />
       <div style={styles.overlay} />
 
-      <div style={styles.content}>
-        {/* Nav */}
+      <div style={styles.content} className="onboarding-content">
         <div style={styles.nav}>
           <div style={styles.logo}>
             <div style={styles.logoMark}>Àṣà</div>
             <span style={styles.logoText}>àṣà.ai</span>
           </div>
-          <div style={styles.navLinks}>
+          <div style={styles.navLinks} className="onboarding-nav-links">
             <span
               style={{
                 ...styles.navLink,
@@ -344,16 +337,16 @@ export default function OnboardingForm({
 
         {view === "form" ? (
           <>
-            <div style={styles.middle} className="asa-fade-in" key={`mid-${step}`}>
+            <div style={styles.middle} className="asa-fade-in onboarding-middle" key={`mid-${step}`}>
               <div style={styles.headlineBlock}>
                 <p style={styles.eyebrow}>{content.eyebrow}</p>
-                <h1 style={styles.heading}>
+                <h1 style={styles.heading} className="onboarding-heading">
                   {content.heading[0]}
                   <br />
                   {content.heading[1]}
                 </h1>
               </div>
-              <div style={styles.sideCopy}>
+              <div style={styles.sideCopy} className="onboarding-side-copy">
                 <p style={styles.sideTitle}>{content.sideTitle}</p>
                 <p style={styles.sideSub}>{content.sideSub}</p>
               </div>
@@ -361,7 +354,7 @@ export default function OnboardingForm({
 
             <div style={styles.footerArea} className="asa-fade-in" key={`form-${step}`}>
               {step === 1 && (
-                <div style={styles.footerRow}>
+                <div className="onboarding-footer-row">
                   {CREATOR_TYPES.map((type) => (
                     <button
                       key={type.id}
@@ -641,17 +634,18 @@ const styles = {
   },
   footerNum: {
     fontSize: "11px",
-    fontWeight: 700,
+    fontWeight: 1000,
     color: "#ffb37a",
   },
   footerLabel: {
     fontSize: "13px",
-    fontWeight: 600,
+    fontWeight: 900,
     color: "#fff",
   },
   footerDesc: {
     fontSize: "11px",
-    color: "rgba(255,255,255,0.55)",
+    fontWeight: 700,
+    color: "rgba(255,255,255,0.75)",
   },
   formPanel: {
     background: "rgba(10, 6, 5, 0.45)",
@@ -797,10 +791,6 @@ const styles = {
     padding: "1.5rem",
     backdropFilter: "blur(6px)",
     transition: "transform 0.2s",
-  },
-  howIcon: {
-    fontSize: "32px",
-    marginBottom: "0.75rem",
   },
   howCardTitle: {
     fontSize: "18px",
