@@ -1,23 +1,7 @@
-/**
- * llmService.js
- *
- * Handles all text-generation calls to the LLM API (Claude, by default).
- * Takes the user's brief + the cultural context block and produces
- * structured JSON matching what WrittenTab and StrategyTab expect.
- *
- * Swap ANTHROPIC_API_KEY / model in .env to use a different provider
- * if needed — the prompt structure stays the same.
- */
-
 const { buildCulturalContext } = require("./culturalContext");
 
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-sonnet-4-6";
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 
-/**
- * Builds the full system prompt combining the task instructions
- * with the injected cultural context.
- */
 function buildSystemPrompt(culturalContextId, toneId) {
   const culturalBlock = buildCulturalContext(culturalContextId, toneId);
 
@@ -32,9 +16,18 @@ this exact shape:
 {
   "written": {
     "captions": [
-      { "id": "c1", "length": "short", "platform": "Instagram", "text": "..." },
-      { "id": "c2", "length": "medium", "platform": "Twitter / X", "text": "..." },
-      { "id": "c3", "length": "long", "platform": "TikTok", "text": "..." }
+      {
+        "id": "c1", "length": "short", "platform": "Instagram", "text": "...",
+        "translations": { "english": "...", "pidgin": "...", "yoruba": "...", "swahili": "..." }
+      },
+      {
+        "id": "c2", "length": "medium", "platform": "Twitter / X", "text": "...",
+        "translations": { "english": "...", "pidgin": "...", "yoruba": "...", "swahili": "..." }
+      },
+      {
+        "id": "c3", "length": "long", "platform": "TikTok", "text": "...",
+        "translations": { "english": "...", "pidgin": "...", "yoruba": "...", "swahili": "..." }
+      }
     ],
     "hashtags": { "primary": ["...", "...", "..."], "secondary": ["...", "...", "...", "..."] },
     "scriptHook": "...",
@@ -63,27 +56,51 @@ this exact shape:
   }
 }
 
-Generate exactly 3 captions, 3-4 primary hashtags, 4 secondary hashtags,
-3 CTAs, 4 colors in the palette, 4 shots, 3 platforms, 3 posting times,
-5 audience interests, and a 3-step narrative arc. Every field must be
-filled with real, specific, culturally-grounded content — never
-placeholder text.`;
+Generate exactly 3 captions (each with all 4 translations: english, pidgin,
+yoruba, swahili — the "text" field should match the culturally-appropriate
+language based on the selected context), 3-4 primary hashtags, 4 secondary
+hashtags, 3 CTAs, 4 colors in the palette, 4 shots, 3 platforms, 3 posting
+times, 5 audience interests, and a 3-step narrative arc. Every field must be
+filled with real, specific, culturally-grounded content — never placeholder
+text. Translations must be genuine — not machine-literal word-for-word, but
+natural and idiomatic in each language.`;
 }
 
-/**
- * Generates a full campaign by calling the LLM with the user's brief.
- *
- * @param {object} formData - { creatorType, projectName, projectDescription, culturalContext, tone }
- * @returns {Promise<object>} - { written, visual, strategy }
- */
 function mockCampaign(formData) {
   const { projectName, creatorType, culturalContext, tone } = formData;
   return {
     written: {
       captions: [
-        { id: "c1", length: "short", platform: "Instagram", text: `${projectName} is here. Built for the culture, straight from the soul. 🔥` },
-        { id: "c2", length: "medium", platform: "Twitter / X", text: `${projectName} is more than a project — it's a statement. A ${tone} ${creatorType} campaign rooted in ${culturalContext}. Don't miss it.` },
-        { id: "c3", length: "long", platform: "TikTok", text: `Everything you've been waiting for is in ${projectName}. This ${creatorType} project was built with intention, with culture, and with you in mind. Watch this space — the full drop is coming and it will move you.` },
+        {
+          id: "c1", length: "short", platform: "Instagram",
+          text: `${projectName} is here. Built for the culture, straight from the soul.`,
+          translations: {
+            english: `${projectName} is here. Built for the culture, straight from the soul.`,
+            pidgin: `${projectName} don land. E build for the culture, e come straight from the soul.`,
+            yoruba: `${projectName} ti dé. A ṣe é fún àṣà, tó jáde tó jáde lára ọkàn.`,
+            swahili: `${projectName} iko hapa. Imejengwa kwa ajili ya utamaduni, moja kwa moja kutoka moyoni.`,
+          },
+        },
+        {
+          id: "c2", length: "medium", platform: "Twitter / X",
+          text: `${projectName} is more than a project — it's a statement. A ${tone} ${creatorType} campaign rooted in ${culturalContext}. Don't miss it.`,
+          translations: {
+            english: `${projectName} is more than a project — it's a statement. A ${tone} ${creatorType} campaign rooted in ${culturalContext}. Don't miss it.`,
+            pidgin: `${projectName} pass project — na statement. A ${tone} ${creatorType} campaign wey root for ${culturalContext}. No miss am.`,
+            yoruba: `${projectName} ju iṣẹ́ àkànṣe lọ — ó jẹ́ ìkéde. Ipolongo ${tone} ${creatorType} tó gbìn sí ${culturalContext}. Má padà.`,
+            swahili: `${projectName} ni zaidi ya mradi — ni tamko. Kampeni ya ${tone} ${creatorType} yenye mizizi katika ${culturalContext}. Usikose.`,
+          },
+        },
+        {
+          id: "c3", length: "long", platform: "TikTok",
+          text: `Everything you've been waiting for is in ${projectName}. This ${creatorType} project was built with intention, with culture, and with you in mind. Watch this space — the full drop is coming and it will move you.`,
+          translations: {
+            english: `Everything you've been waiting for is in ${projectName}. This ${creatorType} project was built with intention, with culture, and with you in mind. Watch this space — the full drop is coming and it will move you.`,
+            pidgin: `Everything wey you don dey wait for dey inside ${projectName}. This ${creatorType} project dem build am with intention, with culture, and they think about you. Watch this space — the full drop dey come and e go move you.`,
+            yoruba: `Ohun gbogbo tí o ti ń retí wà nínú ${projectName}. Iṣẹ́ ${creatorType} yìí ni a kọ́ pẹ̀lú ìdásílẹ̀, pẹ̀lú àṣà, a sì rò nípa rẹ. Ṣọ́ àyè yìí — ìdásilẹ̀ kíkún ń bọ̀, yóò mú ọ gbéra.`,
+            swahili: `Kila kitu ulichokuwa ukisubiri kiko ndani ya ${projectName}. Mradi huu wa ${creatorType} ulijengwa kwa nia, kwa utamaduni, na ukifikiriwa wewe. Angalia nafasi hii — wimbo kamili unakuja na utakugusa moyoni.`,
+          },
+        },
       ],
       hashtags: {
         primary: [`#${projectName.replace(/\s+/g, "")}`, "#AfricanCreatives", "#CultureFirst"],
@@ -133,7 +150,6 @@ function mockCampaign(formData) {
 
 async function generateCampaign(formData) {
   if (process.env.MOCK_LLM === "true") {
-    console.log("[mock] Returning mock campaign — set MOCK_LLM=false to use the real API.");
     return mockCampaign(formData);
   }
 
@@ -148,18 +164,15 @@ Project description: ${projectDescription}
 
 Generate the full campaign JSON now.`;
 
-  const response = await fetch(ANTHROPIC_API_URL, {
+  const url = `https://api.groq.com/openai/v1/models/${GROQ_MODEL}:generateContent?key=${process.env.GROQ_API_KEY}`;
+
+  const response = await fetch(url, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": process.env.ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 4000,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+      systemInstruction: { parts: [{ text: systemPrompt }] },
+      contents: [{ role: "user", parts: [{ text: userPrompt }] }],
+      generationConfig: { maxOutputTokens: 4000 },
     }),
   });
 
@@ -169,9 +182,8 @@ Generate the full campaign JSON now.`;
   }
 
   const data = await response.json();
-  const rawText = data.content?.[0]?.text || "";
+  const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-  // Strip any accidental markdown fences before parsing
   const cleaned = rawText.replace(/```json|```/g, "").trim();
 
   let parsed;

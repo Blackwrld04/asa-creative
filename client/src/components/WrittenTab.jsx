@@ -102,6 +102,7 @@ function exportToPDF(content, projectName) {
   setTimeout(() => { printWindow.print(); printWindow.close(); }, 400);
 }
 
+/* ── Instagram Preview ── */
 function InstagramPreview({ caption, hashtags, projectName }) {
   const handle = (projectName || "creator").toLowerCase().replace(/\s+/g, "_");
   return (
@@ -115,14 +116,13 @@ function InstagramPreview({ caption, hashtags, projectName }) {
         <div style={{ marginLeft: "auto", color: "#888", fontSize: "18px" }}>•••</div>
       </div>
       <div style={pv.igImage}>
-        <span style={{ fontSize: "32px" }}>🎵</span>
         <span style={{ fontSize: "12px", color: "rgba(255,255,255,0.6)", marginTop: "6px" }}>Campaign visual</span>
       </div>
       <div style={pv.igActions}>
-        <span style={pv.igAction}>🤍</span>
-        <span style={pv.igAction}>💬</span>
-        <span style={pv.igAction}>✈️</span>
-        <span style={{ ...pv.igAction, marginLeft: "auto" }}>🔖</span>
+        <span style={pv.igAction}>&#9825;</span>
+        <span style={pv.igAction}>&#9656;</span>
+        <span style={pv.igAction}>&#8594;</span>
+        <span style={{ ...pv.igAction, marginLeft: "auto" }}>&#9993;</span>
       </div>
       <div style={pv.igLikes}>2,847 likes</div>
       <div style={pv.igCaption}>
@@ -134,6 +134,7 @@ function InstagramPreview({ caption, hashtags, projectName }) {
   );
 }
 
+/* ── Twitter Preview ── */
 function TwitterPreview({ caption, hashtags, projectName }) {
   const handle = "@" + (projectName || "creator").toLowerCase().replace(/\s+/g, "");
   return (
@@ -151,50 +152,56 @@ function TwitterPreview({ caption, hashtags, projectName }) {
         <span style={{ color: "#1d9bf0" }}>{hashtags.primary.join(" ")}</span>
       </p>
       <div style={pv.twImgBox}>
-        <span style={{ fontSize: "28px" }}>🎵</span>
         <span style={{ fontSize: "12px", color: "#888", marginTop: "6px" }}>Campaign visual</span>
       </div>
       <div style={pv.twActions}>
-        <span style={pv.twAction}>💬 84</span>
-        <span style={pv.twAction}>🔁 312</span>
-        <span style={pv.twAction}>🤍 2.1K</span>
-        <span style={pv.twAction}>↗️</span>
+        <span style={pv.twAction}>&#9656; 84</span>
+        <span style={pv.twAction}>&#8635; 312</span>
+        <span style={pv.twAction}>&#9825; 2.1K</span>
+        <span style={pv.twAction}>&#8599;</span>
       </div>
       <div style={pv.twTime}>10:34 PM · Jul 4, 2026</div>
     </div>
   );
 }
 
+/* ── TikTok Preview — fully redesigned ── */
 function TikTokPreview({ caption, hashtags, projectName }) {
   const handle = "@" + (projectName || "creator").toLowerCase().replace(/\s+/g, "");
+  // Truncate caption so it doesn't overflow
   const shortCaption = caption.length > 80 ? caption.slice(0, 80) + "..." : caption;
   return (
     <div style={pv.ttOuter}>
+      {/* Phone shell */}
       <div style={pv.ttPhone}>
+        {/* Black video bg */}
         <div style={pv.ttScreen}>
+          {/* Center icon */}
           <div style={pv.ttCenter}>
-            <span style={{ fontSize: "36px" }}>🎵</span>
+            <span style={{ fontSize: "20px", color: "rgba(255,255,255,0.4)" }}>&#9834;</span>
           </div>
 
+          {/* Right sidebar icons */}
           <div style={pv.ttSidebar}>
             <div style={pv.ttAvatarWrap}>
               <div style={pv.ttAvatar}>{(projectName || "C").charAt(0).toUpperCase()}</div>
               <div style={pv.ttFollowBtn}>+</div>
             </div>
             <div style={pv.ttSideBtn}>
-              <div style={{ fontSize: "22px" }}>❤️</div>
+              <div style={{ fontSize: "18px", color: "#fff" }}>&#9825;</div>
               <div style={pv.ttSideCount}>47.2K</div>
             </div>
             <div style={pv.ttSideBtn}>
-              <div style={{ fontSize: "22px" }}>💬</div>
+              <div style={{ fontSize: "18px", color: "#fff" }}>&#9656;</div>
               <div style={pv.ttSideCount}>1.8K</div>
             </div>
             <div style={pv.ttSideBtn}>
-              <div style={{ fontSize: "22px" }}>↗️</div>
+              <div style={{ fontSize: "18px", color: "#fff" }}>&#8599;</div>
               <div style={pv.ttSideCount}>Share</div>
             </div>
           </div>
 
+          {/* Bottom overlay */}
           <div style={pv.ttBottom}>
             <div style={pv.ttHandle}>{handle}</div>
             <div style={pv.ttCaption}>{shortCaption}</div>
@@ -233,7 +240,8 @@ export default function WrittenTab({ data, projectName }) {
   return (
     <div style={styles.wrap} className="asa-fade-in">
 
-      <div style={styles.controlsRow} className="written-controls-row">
+      {/* Controls row */}
+      <div style={styles.controlsRow}>
         <div style={styles.langToggle}>
           <span style={styles.langLabel}>Language:</span>
           {LANGUAGES.map((lang) => (
@@ -246,7 +254,7 @@ export default function WrittenTab({ data, projectName }) {
             </button>
           ))}
         </div>
-        <div style={styles.rightControls} className="written-right-controls">
+        <div style={styles.rightControls}>
           <button
             onClick={() => setShowPreview(!showPreview)}
             style={{ ...styles.previewToggleBtn, ...(showPreview ? styles.previewToggleBtnActive : {}) }}
@@ -259,6 +267,7 @@ export default function WrittenTab({ data, projectName }) {
         </div>
       </div>
 
+      {/* Platform Previewer */}
       {showPreview && (
         <div style={styles.previewSection} className="asa-fade-in">
           <div style={styles.previewHeader}>
@@ -289,9 +298,10 @@ export default function WrittenTab({ data, projectName }) {
         </div>
       )}
 
+      {/* Captions */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Caption variations</h2>
-        <div style={styles.captionsGrid} className="captions-grid">
+        <div style={styles.captionsGrid}>
           {content.captions.map((caption) => (
             <div key={caption.id} style={styles.captionCard} className="asa-hover-card">
               <div style={styles.captionHeader}>
@@ -304,6 +314,7 @@ export default function WrittenTab({ data, projectName }) {
         </div>
       </section>
 
+      {/* Hashtags */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Hashtag strategy</h2>
         <div style={styles.hashtagCard} className="asa-hover-card">
@@ -322,6 +333,7 @@ export default function WrittenTab({ data, projectName }) {
         </div>
       </section>
 
+      {/* Script hook */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Script hook (first 3 seconds)</h2>
         <div style={styles.hookCard} className="asa-hover-card">
@@ -330,6 +342,7 @@ export default function WrittenTab({ data, projectName }) {
         </div>
       </section>
 
+      {/* CTAs */}
       <section style={styles.section}>
         <h2 style={styles.sectionTitle}>Call-to-action options</h2>
         <div style={styles.ctaList}>
@@ -346,7 +359,9 @@ export default function WrittenTab({ data, projectName }) {
   );
 }
 
+/* ── Preview component styles ── */
 const pv = {
+  /* Instagram */
   igWrap: { background: "#fff", borderRadius: "16px", border: "1px solid #efefef", width: "360px", fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif", overflow: "hidden" },
   igHeader: { display: "flex", alignItems: "center", gap: "10px", padding: "12px 14px" },
   igAvatar: { width: "36px", height: "36px", borderRadius: "50%", background: "linear-gradient(135deg,#e8622a,#f4a634)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "14px", flexShrink: 0 },
@@ -360,6 +375,8 @@ const pv = {
   igCaptionHandle: { fontWeight: 700 },
   igHashtags: { padding: "0 14px", fontSize: "12px", color: "#00376b", lineHeight: 1.5, marginBottom: "6px", wordBreak: "break-word" },
   igTime: { padding: "0 14px 12px", fontSize: "10px", color: "#8e8e8e", textTransform: "uppercase", letterSpacing: "0.05em" },
+
+  /* Twitter */
   twWrap: { background: "#fff", borderRadius: "16px", border: "1px solid #efefef", width: "400px", padding: "16px", fontFamily: "-apple-system, BlinkMacSystemFont, sans-serif" },
   twHeader: { display: "flex", alignItems: "center", gap: "10px", marginBottom: "10px" },
   twAvatar: { width: "40px", height: "40px", borderRadius: "50%", background: "linear-gradient(135deg,#e8622a,#f4a634)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: "16px", flexShrink: 0 },
@@ -370,6 +387,8 @@ const pv = {
   twActions: { display: "flex", gap: "24px", fontSize: "13px", color: "#536471", marginBottom: "10px" },
   twAction: { cursor: "pointer" },
   twTime: { fontSize: "13px", color: "#536471", borderTop: "1px solid #efefef", paddingTop: "10px" },
+
+  /* TikTok — clean rebuild */
   ttOuter: { display: "flex", justifyContent: "center" },
   ttPhone: { width: "260px", background: "#000", borderRadius: "28px", overflow: "hidden", border: "6px solid #111", boxShadow: "0 20px 60px rgba(0,0,0,0.4)" },
   ttScreen: { position: "relative", height: "460px", background: "#111", display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden" },
@@ -388,6 +407,7 @@ const pv = {
   ttSound: { color: "rgba(255,255,255,0.75)", fontSize: "11px" },
 };
 
+/* ── Main styles ── */
 const styles = {
   wrap: { display: "flex", flexDirection: "column", gap: "2.5rem" },
   controlsRow: { display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem", flexWrap: "wrap" },
