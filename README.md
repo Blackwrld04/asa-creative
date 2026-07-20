@@ -117,7 +117,7 @@ A creator goes from blank page to complete campaign in under 60 seconds captions
 
 ## 5. How IBM Bob Was Used: From Idea to Finished Product
 
-IBM Bob was used as the primary development tool throughout the entire àṣà project — from the initial brainstorming session through architecture planning, component design, backend implementation, debugging, and final quality assurance. This section tells the complete story of how Bob shaped every phase of the build.
+IBM Bob was used as the primary development tool throughout the entire àṣà project from the initial brainstorming session through architecture planning, component design, backend implementation, debugging, and final quality assurance. This section tells the complete story of how Bob shaped every phase of the build.
 
 ## Phase 1 — Ideation and market research
 
@@ -237,7 +237,7 @@ This block is injected as a system prompt prefix into every LLM call ensuring th
 
 ## Phase 5 — Frontend design and component planning
 
-Before building any components, Bob was used to plan the user experience flow — what screens would a creator see, in what order, and what would each screen need to do?
+Before building any components, Bob was used to plan the user experience flow what screens would a creator see, in what order, and what would each screen need to do?
 
 Bob helped design the three-step onboarding form:
 
@@ -373,9 +373,9 @@ Campaign generation failed: Error: LLM API error (400):
 
 Bob diagnosed precisely:
 
-> _"Your Anthropic account has no credits — the API key is valid but the balance is zero. The LLM call fails with a 400, which throws in llmService.js:108, and the catch block sends back a 500, which bounces you to the form."_
+> _"Your Anthropic account has no credits the API key is valid but the balance is zero. The LLM call fails with a 400, which throws in llmService.js:108, and the catch block sends back a 500, which bounces you to the form."_
 
-Bob presented two solutions and applied the second — mock mode: a flag in `server/.env` (`MOCK_LLM=true`) that bypasses the API entirely in development and returns realistic, culturally-grounded demo data instantly. This let the full app be demonstrated and tested without any API credits.
+Bob presented two solutions and applied the second mock mode: a flag in `server/.env` (`MOCK_LLM=true`) that bypasses the API entirely in development and returns realistic, culturally-grounded demo data instantly. This let the full app be demonstrated and tested without any API credits.
 
 ## Phase 13 — Network timeout: ETIMEDOUT
 
@@ -386,9 +386,9 @@ Campaign generation failed: [TypeError: fetch failed]
 AggregateError [ETIMEDOUT]
 ```
 
-Bob diagnosed: _"ETIMEDOUT means the server cannot reach api.anthropic.com. This is a network-level block — either your ISP or a local firewall is preventing the outbound connection."_
+Bob diagnosed: _"ETIMEDOUT means the server cannot reach api.anthropic.com. This is a network-level block either your ISP or a local firewall is preventing the outbound connection."_
 
-Bob recommended two solutions: use a VPN to bypass the network restriction, or switch to Google's Gemini API which works without network restrictions in the relevant region. Bob provided the exact steps for both options and offered to rewrite `llmService.js` to use Gemini if needed — with the note that the function signature and JSON output contract would stay identical, requiring no frontend changes.
+Bob recommended two solutions: use a VPN to bypass the network restriction, or switch to Google's Gemini API which works without network restrictions in the relevant region. Bob provided the exact steps for both options and offered to rewrite `llmService.js` to use Gemini if needed with the note that the function signature and JSON output contract would stay identical, requiring no frontend changes.
 
 ## Phase 14 — Mobile responsiveness
 
@@ -425,7 +425,7 @@ Bob was used to draft the full project README for the GitHub submission, coverin
 
 Bob also helped write the multilingual about section with the product tagline translated into Yoruba, Nigerian Pidgin, and Swahili, signalling cultural authenticity to judges reading the GitHub repo.
 
-Bob's note on the README: _"The cultural context engine (culturalContext.js) is your strongest differentiator — make sure the video shows it generating something that's clearly Nigerian or African, not generic AI output. That's the moment judges will remember."_
+Bob's note on the README: _"The cultural context engine (culturalContext.js) is your strongest differentiator make sure the video shows it generating something that's clearly Nigerian or African, not generic AI output. That's the moment judges will remember."_
 
 ## Complete timeline summary
 
